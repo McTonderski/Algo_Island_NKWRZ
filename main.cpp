@@ -1,135 +1,230 @@
-// C++Program to count islands in boolean 2D matrix
 #include <bits/stdc++.h>
-#include <fstream>
-#include <cstring>
-
 using namespace std;
 
-// A utility function to do DFS for a 2D
-//  boolean matrix. It only considers
-// the 8 neighbours as adjacent vertices
-void DFS(vector<vector<int>*> *M, int i, int j, int ROW,
+void DFS(vector<vector<int>> &M, int i, int j, int ROW,
          int COL)
 {
     //Base condition
     //if i less than 0 or j less than 0 or i greater than ROW-1 or j greater than COL-  or if M[i][j] != 1 then we will simply return
-    if (i < 0 || j < 0 || i > (ROW - 1) || j > (COL - 1) || M->at(i)->at(j) != 1)
+    if (i < 0 || j < 0 || i > (ROW - 1) || j > (COL - 1) || M[i][j] < 1)
     {
         return;
     }
 
-    if (M->at(i)->at(j) == 1)
+    if (M[i][j] >= 1)
     {
-        M->at(i)->at(j) = 0;
-        DFS(M, i + 1, j, ROW, COL);     //right side traversal
-        DFS(M, i - 1, j, ROW, COL);     //left side traversal
-        DFS(M, i, j + 1, ROW, COL);     //upward side traversal
-        DFS(M, i, j - 1, ROW, COL);     //downward side traversal
-        DFS(M, i + 1, j + 1, ROW, COL); //upward-right side traversal
-        DFS(M, i - 1, j - 1, ROW, COL); //downward-left side traversal
-        DFS(M, i + 1, j - 1, ROW, COL); //downward-right side traversal
-        DFS(M, i - 1, j + 1, ROW, COL); //upward-left side traversal
+        M[i][j] = 0;
+        // Checking Traversals
+        DFS(M, i + 1, j, ROW, COL);
+        DFS(M, i - 1, j, ROW, COL);
+        DFS(M, i, j + 1, ROW, COL);
+        DFS(M, i, j - 1, ROW, COL);
+        DFS(M, i + 1, j + 1, ROW, COL);
+        DFS(M, i - 1, j - 1, ROW, COL);
+        DFS(M, i + 1, j - 1, ROW, COL);
+        DFS(M, i - 1, j + 1, ROW, COL);
     }
 }
 
-int countIslands(vector<vector<int>*> *M)
+int countIslands(vector<vector<int>> M)
 {
-    int ROW = M->size();
-    int COL = M->at(0)->size();
+    int ROW = M.size();
+    int COL = M[0].size();
     int count = 0;
     for (int i = 0; i < ROW; i++)
     {
         for (int j = 0; j < COL; j++)
         {
-            if (M->at(i)->at(j) == 1)
+            if (M[i][j] >= 1)
             {
-                M->at(i)->at(j) = 0;
+                M[i][j] = 0;
                 count++;
-                DFS(M, i + 1, j, ROW, COL);     //right side traversal
-                DFS(M, i - 1, j, ROW, COL);     //left side traversal
-                DFS(M, i, j + 1, ROW, COL);     //upward side traversal
-                DFS(M, i, j - 1, ROW, COL);     //downward side traversal
-                DFS(M, i + 1, j + 1, ROW, COL); //upward-right side traversal
-                DFS(M, i - 1, j - 1, ROW, COL); //downward-left side traversal
-                DFS(M, i + 1, j - 1, ROW, COL); //downward-right side traversal
-                DFS(M, i - 1, j + 1, ROW, COL); //upward-left side traversal
+                // checking on traversals
+                DFS(M, i + 1, j, ROW, COL);
+                DFS(M, i - 1, j, ROW, COL);
+                DFS(M, i, j + 1, ROW, COL);
+                DFS(M, i, j - 1, ROW, COL);
+                DFS(M, i + 1, j + 1, ROW, COL);
+                DFS(M, i - 1, j - 1, ROW, COL);
+                DFS(M, i + 1, j - 1, ROW, COL);
+                DFS(M, i - 1, j + 1, ROW, COL);
             }
         }
     }
     return count;
 }
 
-int len(string str)
+vector<vector<int>> read_data()
 {
-    int length = 0;
-    for (int i = 0; str[i] != '\0'; i++)
-    {
-        length++;
-
+    ifstream data_file("data.txt");
+    vector<vector<int>> dane;
+    std::string eachrow;
+    if(!data_file.is_open()){
+        cout << "Error while opening data file";
+        return {};
     }
-    return length;
+    while (std::getline(data_file, eachrow))
+    {
+        std::vector<int> row;
+
+        std::istringstream is( eachrow );
+        int n;
+        while( is >> n ) {
+         row.push_back(n);   // do something with n
+        }
+        //after iterating row in text file, add vector into 2D vector
+        dane.push_back(row);
+    }
+    return dane;
 }
 
-void split (string str, char seperator, vector<int> *tmpLine)
+
+void print_map(vector<vector<int>> M)
 {
-    int currIndex = 0, i = 0;
-    int startIndex = 0, endIndex = 0;
-    string subStr;
-    while (i <= len(str))
+    for (std::vector<int> &row : M)
     {
-        if (str[i] == seperator || i == len(str))
-        {
-            endIndex = i;
-            subStr = "";
-            subStr.append(str, startIndex, endIndex - startIndex);
-            std::cout<<"appending value " << stoi(subStr) << std::endl;
-            tmpLine->push_back(stoi(subStr));
-            currIndex += 1;
-            startIndex = endIndex + 1;
-        }
-        i++;
+        for (int &x : row)
+            //print each element
+            std::cout << x << ' ';
+
+        //change row
+        std::cout << '\n';
     }
 }
-
-void printMap(vector<vector<int>*> *M){
-    std::cout << "printing map " <<std::endl;
-    for(auto & i : *M){
-        for(int j : *i){
-            std::cout << j << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
-void readDataFromFile(vector<vector<int>*> *M){
-    ifstream dataFile("data.txt");
-    if(!dataFile.is_open()){
-        std::cout<<"Error while opening file";
-        return;
-    }
-    std::cout<<"file is opend"<<std::endl;
-    string line;
-    char separator = ' ';
-    vector<int> *v = new vector<int>(10);
-
-    while(std::getline(dataFile, line)){
-        v->clear();
-        std::cout<<line<<std::endl;
-        split(line, separator, v);
-        M->push_back(v);
-        std::cout<<"adding vector";
-    }
-    std::cout<<"file is done working on"<<std::endl;
-    dataFile.close();
-}
-
 // Driver Code
 int main()
 {
-    auto *M = new vector<vector<int>*>(10);
-    readDataFromFile(M);
-    printMap(M);
-
-    cout << "Number of islands is: " << countIslands(M);
+    vector<vector<int>> N = read_data();
+    // Creating 1D array to find maximum land level
+    vector<int> tmp1D;
+    for(auto & i : N){
+        tmp1D.insert(tmp1D.end(),i.begin(),i.end());
+    }
+    auto max = *max_element(tmp1D.begin(), tmp1D.end());
+    cout << "Max land level is: " << max << endl;
+    int water_raised_by_x_levels = 0;
+    int initial_island_count = countIslands(N);
+    cout << "Number of islands is: " << initial_island_count << endl;
+    for(auto i = 0; i < max; i++)
+    {
+        for(int row = 0; row < N.size(); row++)
+        {
+            for(int col = 0; col < N[0].size(); col++)
+            {
+                if(N[row][col] != 0)
+                {
+                    bool can_be_flooded = false;
+                    if(N[row][col] == 1)
+                    {
+                        if(row + 1 >= 0 && col >= 0 && row + 1 < N.size() && col < N[0].size())
+                        {
+                            if(N[row + 1][col] == 0)
+                            {
+                                can_be_flooded = true;
+                            }
+                        }
+                        else
+                        {
+                            can_be_flooded = true;
+                        }
+                        if(row - 1 >= 0 && col >= 0 && row - 1 < N.size() && col < N[0].size())
+                        {
+                            if(N[row - 1][col] == 0)
+                            {
+                                can_be_flooded = true;
+                            }
+                        }
+                        else
+                        {
+                            can_be_flooded = true;
+                        }
+                        if(row >= 0 && col + 1 >= 0 && row < N.size() && col + 1 < N[0].size())
+                        {
+                            if(N[row][col + 1] == 0)
+                            {
+                                can_be_flooded = true;
+                            }
+                        }
+                        else
+                        {
+                            can_be_flooded = true;
+                        }
+                        if(row >= 0 && col - 1 >= 0 && row < N.size() && col - 1 < N[0].size())
+                        {
+                            if(N[row][col - 1] == 0)
+                            {
+                                can_be_flooded = true;
+                            }
+                        }
+                        else
+                        {
+                            can_be_flooded = true;
+                        }
+                        if(row + 1 >= 0 && col + 1 >= 0 && row + 1 < N.size() && col + 1 < N[0].size())
+                        {
+                            if(N[row + 1][col + 1] == 0)
+                            {
+                                can_be_flooded = true;
+                            }
+                        }
+                        else
+                        {
+                            can_be_flooded = true;
+                        }
+                        if(row - 1 >= 0 && col - 1 >= 0 && row - 1 < N.size() && col - 1 < N[0].size())
+                        {
+                            if(N[row - 1][col - 1] == 0)
+                            {
+                                can_be_flooded = true;
+                            }
+                        }
+                        else
+                        {
+                            can_be_flooded = true;
+                        }
+                        if(row + 1 >= 0 && col - 1 >= 0 && row + 1 < N.size() && col - 1 < N[0].size())
+                        {
+                            if(N[row + 1][col - 1] == 0)
+                            {
+                                can_be_flooded = true;
+                            }
+                        }
+                        else
+                        {
+                            can_be_flooded = true;
+                        }
+                        if(row - 1 >= 0 && col + 1 >= 0 && row - 1 < N.size() && col + 1 < N[0].size())
+                        {
+                            if(N[row - 1][col + 1] == 0)
+                            {
+                                can_be_flooded = true;
+                            }
+                        }
+                        else
+                        {
+                            can_be_flooded = true;
+                        }
+                    }
+                    else
+                    {
+                        can_be_flooded = true;
+                    }
+                    if(can_be_flooded)
+                    {
+                        N[row][col]--;
+                    }
+                }
+            }
+        }
+        water_raised_by_x_levels++;
+        print_map(N);
+        int island_count = countIslands(N);
+        if(initial_island_count < island_count)
+        {
+            cout << "To split island into two pieces water needs to raise by " << water_raised_by_x_levels << " levels";
+            return 0;
+        }
+        cout << "Number of islands is: " << island_count << endl;
+    }
     return 0;
 }
